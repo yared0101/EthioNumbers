@@ -54,17 +54,10 @@ export default class App extends React.Component {
     </View>
     <View style={[{flex:0.5,justifyContent:'flex-start'},this.state.theme]}>
       <Text
-        onPress={()=>{
-          document.getElementsByTagName('input')[1].select()
-          document.execCommand('copy')
-        }}
         style={[{textAlign:'center',fontSize:this.state.fontSize+this.state.fontSize},this.state.theme]}
       >
         {this.state.value && convertEthiopian(this.state.value)}
       </Text>
-    </View>
-    <View style={{display:'none'}}>
-      {/* <MyTextInput value={this.state.value && convertEthiopian(this.state.value).split('\n')[0]}/> */}
     </View>
   </View>
   }
@@ -128,8 +121,8 @@ export default class App extends React.Component {
     </View>
   );}
 }
-const pureNumbers=(pure:string,returnAll=false)=>{
-  const all={'1':'፩','2':'፪','3':'፫','4':'፬','5':'፭','6':'፮','7':'፯','8':'፰','9':'፱','10':'፲','20':'፳','30':'፴','40':'፵','50':'፶','60':'፷','70':'፸','80':'፹','90':'፺','100':'፻','10000':'፼'}
+const pureNumbers=(pure:string,returnAll=false):any=>{
+  const all:any={'1':'፩','2':'፪','3':'፫','4':'፬','5':'፭','6':'፮','7':'፯','8':'፰','9':'፱','10':'፲','20':'፳','30':'፴','40':'፵','50':'፶','60':'፷','70':'፸','80':'፹','90':'፺','100':'፻','10000':'፼'}
   if(returnAll)
     return all;
   if(pure=='0')
