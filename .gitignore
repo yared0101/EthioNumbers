@@ -3,6 +3,8 @@ assets/icons/*
 !assets/icons/circle-fill-light.svg
 !assets/icons/signpost-2-light.svg
 !assets/icons/signpost-2-dark.svg
+!assets/icons/copy-light.svg
+!assets/icons/copy-dark.svg
 node_modules/**/*
 .expo/*
 npm-debug.*
