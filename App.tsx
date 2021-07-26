@@ -1,38 +1,40 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image} from 'react-native';
+import { StyleSheet,Appearance ,Text, View, Image, ImageBackground} from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard'
 import Header from './components/Header'
-import MyModal from './components/MyModal';
 // import Canvas from 'react-native-canvas';
-const menuTypeIcon=require('./assets/icons/list-ul.svg')
 const circleFillDark=require('./assets/icons/circle-fill-dark.svg')
 const circleFillLight=require('./assets/icons/circle-fill-light.svg')
 const pageIconLight=require('./assets/icons/signpost-2-light.svg')
 const pageIconDark=require('./assets/icons/signpost-2-dark.svg')
+const copyIconLight = require('./assets/icons/copy-light.svg')
+const copyIconDark = require('./assets/icons/copy-dark.svg')
 import MyTextInput from './components/MyTextInput';
 
 export default class App extends React.Component {
-  themeStyles=StyleSheet.create({
+  themeStyles={
     dark:{
+      style:'dark',
       color:'#ffffff',
       backgroundColor:'#003942',
       borderColor:'lightgrey',
       shadowColor:'lightgrey',
     },
     light:{
+      style:'light',
       color:'#003942',
       backgroundColor:'#ffffff',
       borderColor:'#002222',
       shadowColor:'#002222',
     }
-  })
+  }
   state={
     modalFlexer:'flex',
     fontSize:20,
     value:'',
-    theme:this.themeStyles.dark,
-    themeIcon:circleFillLight,
-    pageIcon:pageIconLight,
-    page:'0'
+    theme:this.themeStyles[Appearance.getColorScheme()||'dark'],
+    page:'0',
+
   }
   changeTheme(){
     if(this.state.theme == this.themeStyles.light){
@@ -48,7 +50,7 @@ export default class App extends React.Component {
       <MyTextInput
         overRideStyle={[{marginHorizontal:5},this.state.theme]}
         placeholder='Input Number Here' 
-        onChangeText={(text:String)=>this.setState({value:text})}
+        onChangeText={(text:string)=>this.setState({value:text?convertEthiopian(text):''})}
       />
       <Text style={[{textAlign:'center'},this.state.theme]}>{Number(this.state.value)?Number(this.state.value).toLocaleString() : ''}</Text>
     </View>
@@ -56,8 +58,17 @@ export default class App extends React.Component {
       <Text
         style={[{textAlign:'center',fontSize:this.state.fontSize+this.state.fontSize},this.state.theme]}
       >
-        {this.state.value && convertEthiopian(this.state.value)}
+        {this.state.value}
       </Text>
+      {<Text 
+        style={{textAlign:'right'}}
+        onPress={()=>Clipboard.setString(String(this.state.value))}
+      >
+        { 
+          this.state.value && typeof(this.state.value)=='string' && 
+          <Image source={this.state.theme.style=='dark'?copyIconLight:copyIconDark} style={{width: 30, height: 30}} />
+        }
+      </Text>}
     </View>
   </View>
   }
@@ -105,16 +116,19 @@ export default class App extends React.Component {
   }
   render()
   {
+    Appearance.addChangeListener(({colorScheme})=>{
+      this.setState({theme:this.themeStyles[colorScheme||'dark']})
+    });
     return (
     <View style={[styles.container,this.state.theme]}>
       <View style={[styles.container1,this.state.theme]}></View>
       <Header 
         text="መቀየርያ" 
         viewStyle={[styles.header,this.state.theme,{marginBottom:8}]} 
-        icon={<Image source={this.state.themeIcon} style={{width: 20, height: 20}} />} 
+        icon={<Image source={this.state.theme.style=='dark'? circleFillLight:circleFillDark} style={{width: 20, height: 20}} />} 
         textStyle={[styles.headerText,this.state.theme]} onPress={()=>this.changeTheme()} 
         onPagePress={()=>this.changePage()} 
-        pageIcon={<Image source={this.state.pageIcon} 
+        pageIcon={<Image source={this.state.theme.style=='dark'? pageIconLight:pageIconDark} 
         style={{width: 20, height: 20}} />} 
       />
       {this.state.page=='1'? this.DisplayNumbers() : this.ConverterPage()}
@@ -169,7 +183,8 @@ const convertEthiopian=(value:string)=>{
   if(!alternateNumber)
     return correctNumber;
   else{
-    return correctNumber + '\n\n' + 'ወይም\n\n' + alternateNumber;
+    return alternateNumber;
+    // return correctNumber + '\n\n' + 'ወይም\n\n' + alternateNumber;
   }
 }
 const padding=(number: number)=>{ 
