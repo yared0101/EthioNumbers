@@ -4,31 +4,55 @@ import {
     Appearance,
     Text,
     View,
-    Image,
-    ImageBackground,
+    SafeAreaView,
+    Alert,
 } from "react-native";
-import Clipboard from "@react-native-clipboard/clipboard";
+import Clipboard from "expo-clipboard";
 import Header from "./components/Header";
 // import Canvas from 'react-native-canvas';
-const circleFillDark = require("./assets/icons/circle-fill-dark.svg");
-const circleFillLight = require("./assets/icons/circle-fill-light.svg");
-const pageIconLight = require("./assets/icons/signpost-2-light.svg");
-const pageIconDark = require("./assets/icons/signpost-2-dark.svg");
-const copyIconLight = require("./assets/icons/copy-light.svg");
-const copyIconDark = require("./assets/icons/copy-dark.svg");
+// const circleFillDark = require("./assets/icons/circle-fill-dark.svg");
+// const circleFillLight = require("./assets/icons/circle-fill-light.svg");
+// const pageIconLight = require("./assets/icons/signpost-2-light.svg");
+// const pageIconDark = require("./assets/icons/signpost-2-dark.svg");
+// const copyIconLight = require("./assets/icons/copy-light.svg");
+// const copyIconDark = require("./assets/icons/copy-dark.svg");
+
+import { AntDesign, Feather } from "@expo/vector-icons";
+const circleFillDark = <Feather name="circle" size={24} color="black" />;
+const circleFillLight = <Feather name="circle" size={24} color="white" />;
+const pageIconLight = <AntDesign name="retweet" size={24} color="white" />;
+const pageIconDark = <AntDesign name="retweet" size={24} color="black" />;
+const copyIconDark = <AntDesign name="copy1" size={24} color="black" />;
+const copyIconLight = <AntDesign name="copy1" size={24} color="white" />;
 import MyTextInput from "./components/MyTextInput";
+
+const numberCommaChanger = (num = "9999") => {
+    let current = num.split("");
+    current.reverse();
+    let changed = [];
+    let counter = 0;
+    for (let i in current) {
+        if (counter % 3 == 0 && counter != 0) {
+            changed.push(",");
+        }
+        counter++;
+        changed.push(current[i]);
+    }
+    changed.reverse();
+    const c = changed.join("");
+    changed.reverse;
+    return c;
+};
 
 export default class App extends React.Component {
     themeStyles = {
         dark: {
-            style: "dark",
             color: "#ffffff",
             backgroundColor: "#003942",
             borderColor: "lightgrey",
             shadowColor: "lightgrey",
         },
         light: {
-            style: "light",
             color: "#003942",
             backgroundColor: "#ffffff",
             borderColor: "#002222",
@@ -72,9 +96,11 @@ export default class App extends React.Component {
                             this.setState({
                                 value: text ? convertEthiopian(text) : "",
                                 regularNumber: text
-                                    ? Number(
-                                          Number(text) || ""
-                                      ).toLocaleString()
+                                    ? numberCommaChanger(
+                                          Number(
+                                              Number(text) || ""
+                                          ).toLocaleString()
+                                      )
                                     : "",
                             })
                         }
@@ -104,21 +130,21 @@ export default class App extends React.Component {
                     {
                         <Text
                             style={{ textAlign: "right" }}
-                            onPress={() =>
-                                Clipboard.setString(String(this.state.value))
-                            }
+                            onPress={() => {
+                                Clipboard.setString(String(this.state.value));
+                                Alert.alert(
+                                    "text copied",
+                                    "text has been copied to your clipboard",
+                                    [{ text: "ok", onPress: () => {} }],
+                                    { cancelable: false }
+                                );
+                            }}
                         >
                             {this.state.value &&
-                                typeof this.state.value == "string" && (
-                                    <Image
-                                        source={
-                                            this.state.theme.style == "dark"
-                                                ? copyIconLight
-                                                : copyIconDark
-                                        }
-                                        style={{ width: 30, height: 30 }}
-                                    />
-                                )}
+                                typeof this.state.value == "string" &&
+                                (this.state.theme.color == "#ffffff"
+                                    ? copyIconLight
+                                    : copyIconDark)}
                         </Text>
                     }
                 </View>
@@ -160,9 +186,7 @@ export default class App extends React.Component {
                                 {
                                     flex: 0.5,
                                     textAlign: "center",
-                                    fontSize:
-                                        this.state.fontSize +
-                                        this.state.fontSize,
+                                    fontSize: this.state.fontSize,
                                 },
                                 this.state.theme,
                             ]}
@@ -175,9 +199,7 @@ export default class App extends React.Component {
                                     flex: 0.5,
                                     textAlign: "center",
                                     paddingVertical: 5,
-                                    fontSize:
-                                        this.state.fontSize +
-                                        this.state.fontSize,
+                                    fontSize: this.state.fontSize,
                                 },
                                 this.state.theme,
                             ]}
@@ -200,9 +222,7 @@ export default class App extends React.Component {
                                 {
                                     flex: 0.5,
                                     textAlign: "center",
-                                    fontSize:
-                                        this.state.fontSize +
-                                        this.state.fontSize,
+                                    fontSize: this.state.fontSize,
                                 },
                                 this.state.theme,
                             ]}
@@ -215,9 +235,7 @@ export default class App extends React.Component {
                                     flex: 0.5,
                                     textAlign: "center",
                                     paddingVertical: 5,
-                                    fontSize:
-                                        this.state.fontSize +
-                                        this.state.fontSize,
+                                    fontSize: this.state.fontSize,
                                 },
                                 this.state.theme,
                             ]}
@@ -228,11 +246,20 @@ export default class App extends React.Component {
                 </View>
             );
         }
-        return (
+        const a = (
             <View style={{ flex: 1, flexDirection: "column" }}>
                 {allDataProp}
             </View>
         );
+        return a;
+        // <FlatList
+        // style={{maxHeight:innerHeight-70-72}}
+        // data={props.data}
+        // renderItem={({item,index}) => (
+
+        // )
+        // }
+        //   />
     }
     changePage() {
         this.setState({ page: this.state.page == "0" ? "1" : "0" });
@@ -242,43 +269,33 @@ export default class App extends React.Component {
             this.setState({ theme: this.themeStyles[colorScheme || "dark"] });
         });
         return (
-            <View style={[styles.container, this.state.theme]}>
+            <SafeAreaView style={[styles.container, this.state.theme]}>
                 <View style={[styles.container1, this.state.theme]}></View>
                 <Header
                     text="መቀየርያ"
                     viewStyle={[
                         styles.header,
                         this.state.theme,
-                        { marginBottom: 8 },
+                        { marginBottom: 8, paddingHorizontal: 10 },
                     ]}
                     icon={
-                        <Image
-                            source={
-                                this.state.theme.style == "dark"
-                                    ? circleFillLight
-                                    : circleFillDark
-                            }
-                            style={{ width: 20, height: 20 }}
-                        />
+                        this.state.theme.color == "#ffffff"
+                            ? circleFillLight
+                            : circleFillDark
                     }
                     textStyle={[styles.headerText, this.state.theme]}
                     onPress={() => this.changeTheme()}
                     onPagePress={() => this.changePage()}
                     pageIcon={
-                        <Image
-                            source={
-                                this.state.theme.style == "dark"
-                                    ? pageIconLight
-                                    : pageIconDark
-                            }
-                            style={{ width: 20, height: 20 }}
-                        />
+                        this.state.theme.color == "#ffffff"
+                            ? pageIconLight
+                            : pageIconDark
                     }
                 />
                 {this.state.page == "1"
                     ? this.DisplayNumbers()
                     : this.ConverterPage()}
-            </View>
+            </SafeAreaView>
         );
     }
 }
